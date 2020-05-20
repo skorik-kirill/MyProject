@@ -199,13 +199,13 @@ node('pod') {
          notifySuccessfulDeploy()
                   echo "THE END"        
 
-//}
-//node('master'){
-    //     checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/MyProject.git']]]
- //   stage('deploy with ansible'){  
-  //        sh 'ls' 
-  //        sh 'su - skorikkirill7'
-   //          sh ' su skorikkirill7 -c "ansible-playbook -i ansible/inventory.yml ${PWD}/ansible/wordpress1and2.yml"'        
-  //  }
+}
+node('master'){
+         checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/MyProject.git']]]
+    stage('deploy with ansible'){  
+          sh 'ls' 
+          sh 'su - skorikkirill7'
+             sh ' su skorikkirill7 -c "ansible-playbook -i ansible/inventory.yml ${PWD}/ansible/wordpress1and2.yml"'        
+    }
          notifySuccessfulDeploy()
 }
