@@ -195,40 +195,17 @@ node('pod') {
             }
          
    }
-         
-       //  stage('delete test deployment'){
-         // container('kubectl'){
-            //sh 'helm delete  wordpress1 --purge'
-            // sh 'helm delete  wordpress2 --purge'
-        //  }
-    //   }
-         
-        
-    
-         
-       // stage('deploy web-app with ansible'){
-             //    container('ansible'){
-               
-            //             sh 'su - skorikkirill7'
-               //           sh 'whoami'
-            //     sh 'ansible-playbook -i inventory.yml ${PWD}/wordpress1.yml'
-               // sh 'ansible-playbook ansibletest.yml'
-                          // ansiblePlaybook( 
-           // playbook: '${WORKSPACE}/wordpress1.yml',
-           //inventory: 'path/to/inventory.ini', 
-              //  )
-             //   }
+  
          notifySuccessfulDeploy()
                   echo "THE END"        
-             //  }
-         
-}
-node('master'){
-         checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/MyProject.git']]]
-    stage('deploy with ansible'){  
-          sh 'ls' 
-          sh 'su - skorikkirill7'
-             sh ' su skorikkirill7 -c "ansible-playbook -i ansible/inventory.yml ${PWD}/ansible/wordpress1and2.yml"'        
-    }
+
+//}
+//node('master'){
+    //     checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/MyProject.git']]]
+ //   stage('deploy with ansible'){  
+  //        sh 'ls' 
+  //        sh 'su - skorikkirill7'
+   //          sh ' su skorikkirill7 -c "ansible-playbook -i ansible/inventory.yml ${PWD}/ansible/wordpress1and2.yml"'        
+  //  }
          notifySuccessfulDeploy()
 }
