@@ -2,8 +2,8 @@
 # tasks file for wordpress2
 - name: add chart to cluster
   git:
-    repo: https://github.com/skorik-kirill/helmcharts.git
+    repo: https://github.com/skorik-kirill/MyProject.git
     dest: /tmp/chart
-    update: no
-- name: install chart
-  command: helm install --name wordpress2 /tmp/chart/wordpress2
+    update: yes
+- name: apply deployment
+  command: "kubectl apply -f  /tmp/chart/deployments/wordpress2Deployment.yaml"
