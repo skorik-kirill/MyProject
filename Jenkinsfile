@@ -68,7 +68,7 @@ def notifyFailedForSecond() {
       }
 node('pod') {
    notifyStarted()
-    checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/helmcharts.git']]]
+    checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/MyProject.git']]]
       def app 
       
         
@@ -224,11 +224,11 @@ node('pod') {
          
 }
 node('master'){
-         checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/helmcharts.git']]]
+         checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/MyProject.git']]]
     stage('deploy with ansible'){  
           sh 'ls' 
           sh 'su - skorikkirill7'
-             sh ' su skorikkirill7 -c "ansible-playbook -i inventory.yml ${PWD}/wordpress1and2.yml"'        
+             sh ' su skorikkirill7 -c "ansible-playbook -i ansible/inventory.yml ${PWD}/ansible/wordpress1and2.yml"'        
     }
          notifySuccessfulDeploy()
 }
