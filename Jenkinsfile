@@ -3,7 +3,7 @@ pipeline {
    agent {label 'pod'}
       triggers {
 
-        pollSCM('')
+        githubPush()
 
 
       }
