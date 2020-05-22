@@ -128,7 +128,7 @@ pipeline {
                      container('kubectl'){
                       sh 'helm delete  wordpress2 --purge'
                         }
-                   //  notifyFailed()
+                   // // notifyFailed()
                   println("sent e-mail false test")
                   println("Fix your image")
                   sh 'exit 1'        
