@@ -5,7 +5,10 @@ pipeline {
 
        // pollSCM('')
 
+
     //  }
+
+  
          stages{
                   stage('Test docker'){
                            steps{
