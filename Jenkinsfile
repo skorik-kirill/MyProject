@@ -3,7 +3,7 @@ pipeline {
    agent {label 'pod'}
       triggers {
 
-        PollSCM('')
+        pollSCM('')
 
       }
          stages{
