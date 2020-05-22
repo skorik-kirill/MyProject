@@ -2,7 +2,7 @@
 pipeline {
    agent {label 'pod'}
       triggers {
-        pollSCM('')
+        githubPush()
       }
          stages{
                   stage('Test docker'){
