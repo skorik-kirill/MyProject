@@ -7,10 +7,14 @@ pipeline {
 
 
       }
-      emailext body: "Build: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Started!!!", subject: 'Build start', to: 'skorikkirill7@gmail.com'
+     
   
          stages{
-                  
+            stage('Sent start e-mail'){
+               steps{
+                   emailext body: "Build: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Started!!!", subject: 'Build start', to: 'skorikkirill7@gmail.com'
+               }
+            }
                   stage('Test docker'){
                            steps{
                               container('docker'){
