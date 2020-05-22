@@ -54,6 +54,9 @@ pipeline {
                   }
                }
                post{
+                  success{
+                 emailext body: "Test deploy wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: test deploy success, check error!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com' 
+                     }
       failure{
             emailext body: "Test deploy wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Deploy fail, check error!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com'  
                   }
@@ -79,7 +82,6 @@ pipeline {
                       sh 'helm delete  wordpress1 --purge'
                         }
                    //  notifyFailed()
-               emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'
                   println("sent e-mail false test")
                   println("Fix your image")
                   sh 'exit 1'        
@@ -91,9 +93,9 @@ pipeline {
       success{
             emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Success!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
       }
-             // failure {
-            //  emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
-              // }
+              failure {
+              emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
+               }
       }
       }
             stage('docker build and push site 2'){
@@ -127,6 +129,14 @@ pipeline {
                      }
                   }
                }
+               post{
+                  success{
+                 emailext body: "Test deploy wordpress2: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: test deploy success, check error!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com' 
+                     }
+      failure{
+            emailext body: "Test deploy wordpress2: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Deploy fail, check error!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com'  
+      }
+             }
              }
       stage('test site 2'){
        steps{
