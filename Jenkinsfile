@@ -1,132 +1,57 @@
 #!/usr/bin/env groovy
-def notifySuccessful() {
-         emailext (
-      to: 'skorikkirill7@gmail.com',
-      subject: "Success test: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """Test: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]': Success!!!
-        Check console output ;'${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]""",
-    )
-      }
-
-def notifySuccessfulDeploy() {
-         emailext (
-      to: 'skorikkirill7@gmail.com',
-      subject: "Success deploy: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """Deploy: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]': Success !!!
-        Check console output ;'${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]""",
-    )
-      }
-def notifySuccessfulBuild1() {
-         emailext (
-      to: 'skorikkirill7@gmail.com',
-      subject: "Success deploy: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """Build: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]': Success build image for wordpress1 !!!
-        Check console output ;'${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]""",
-    )
-      }
-def notifySuccessfulBuild2() {
-         emailext (
-      to: 'skorikkirill7@gmail.com',
-      subject: "Success deploy: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """Build: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]': Success build image for wordpress2 !!!
-        Check console output ;'${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]""",
-    )
-      }
-         
-
-def notifySuccessfulForSecond() {
-         emailext (
-      to: 'skorikkirill7@gmail.com',
-      subject: "Success test: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """Test: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]': Success site2!!!
-        Check console output ;'${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]""",
-    )
-      }
-def notifyFailed() {
-         emailext (
-      to: 'skorikkirill7@gmail.com',
-      subject: "Failed test: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """Test: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]': Failed!!!
-        Check console output ;'${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]""",
-                )
+pipeline {
+   agent {label 'pod'}
+         stages{
+                  stage('Test docker'){
+                           steps{
+                              container('docker'){
+                                    sh 'docker ps'
+                           }
+                        }
                   }  
-def notifyFailedForSecond() {
-         emailext (
-      to: 'skorikkirill7@gmail.com',
-      subject: "Failed test: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """Test: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]': Failed site2!!!
-        Check console output ;'${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]""",
-                )
-                  }  
- def notifyStarted() {
-         emailext (
-      to: 'skorikkirill7@gmail.com',
-      subject: "Started build: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """Build: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]': Started!!!
-        Check console output ;'${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]""",
-    )
-      }
-node('pod') {
-   notifyStarted()
-    checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/MyProject.git']]]
-      def app 
-      
-        
-                  
-    stage(' test docker   ') {
-       container('docker') {
-      sh 'docker ps '
-       }
-       }
-         
-        echo "BUILD DOCKER IMAGE AND TEST FOR SITE1"
-         
-   stage('docker build '){
+   stage('docker build and push '){
+      steps{  
       container('docker'){
+         script{
+             def app
        app = docker.build("us.gcr.io/sincere-hybrid-274219/wordpress1","${WORKSPACE}/wordpress1")
-               //app = docker.build("us.gcr.io/sincere-hybrid-274219/wordpress1","/home/jenkins/agent/workspace/helmTest_master/wordpress1")
-       //sh 'docker build . -t us.gcr.io/sincere-hybrid-274219/wordpress1 -f ${PWD}/wordpress1/Dockerfile'
-      }
-   }
-   stage('push image to GCR'){
-      container('docker'){
          docker.withRegistry('https://us.gcr.io', 'gcr:ClusterGPR') {
               app.push("${env.BUILD_NUMBER}")
               app.push("latest")    
+                   }
+                }
+             }
          }
+      post{
+      success{
+            emailext body: "Build wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Build Success!!!", subject: 'Build result', to: 'skorikkirill7@gmail.com'  
       }
-   }
-         notifySuccessfulBuild1() 
-       stage('test kubectl'){
-       container('kubectl'){
-          sh 'kubectl version'
-          sh 'kubectl get pod'
-          sh 'helm list'
-          
-         }
-     }
-       stage('list derectory'){
-       sh 'ls -l' 
-       
-       }
-       stage('deploy helm chart'){
-          container('kubectl'){
-          //sh 'helm install --name mysql ${PWD}/mysql'
-          sh 'helm install --name wordpress1 ${PWD}/wordpress1'
-          sleep 15
-         }
-       }
-   stage('test site'){
-     //sh 'curl http://add194f6.ngrok.io' 
-     
-    def response= sh(script: 'curl -s -o /dev/null -w "%{http_code}\n"  http://34.71.232.200/wordpress1/', returnStdout: true)
+         failure {
+              emailext body: "Build wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Build Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
+               }
+      }
+      }
+            stage('deploy helm chart') {
+               steps{
+                  container('kubectl'){
+                     script{
+                       sh 'helm install --name wordpress1 ${PWD}/wordpress1'
+                        sleep 15 
+                     }
+                  }
+               }
+             }
+      stage('test site'){
+       steps{
+          script{
+             def response= sh(script: 'curl -s -o /dev/null -w "%{http_code}\n"  http://34.71.232.200/wordpress1/', returnStdout: true)
      //sh  ' echo $response' 
            println("Response: " +response)
-            def intResponse = response as int
+             def intResponse = response as int
             if( intResponse == 200 ){
                   println("Test passed continue to deploy")
                   println("sent e-mail success test")
-                     notifySuccessful()
+                    // notifySuccessful()
                      container('kubectl'){
                      sh 'helm delete  wordpress1 --purge'
                      }
@@ -135,50 +60,66 @@ node('pod') {
                      container('kubectl'){
                       sh 'helm delete  wordpress1 --purge'
                         }
-                     notifyFailed()
+                   //  notifyFailed()
                   println("sent e-mail false test")
                   println("Fix your image")
-                  sh 'exit 1'
-                     
-            }
-   }
-  // notifySuccessful()
-                          echo "BUILD DOCKER IMAGE AND TEST FOR SITE2"
-      
-         stage('docker build '){
-      container('docker'){
-       app = docker.build("us.gcr.io/sincere-hybrid-274219/wordpress2","${WORKSPACE}/wordpress2")
-               //app = docker.build("us.gcr.io/sincere-hybrid-274219/wordpress1","/home/jenkins/agent/workspace/helmTest_master/wordpress1")
-       //sh 'docker build . -t us.gcr.io/sincere-hybrid-274219/wordpress1 -f ${PWD}/wordpress1/Dockerfile'
+                  sh 'exit 1'        
+                         }
+                    }
+                }
+             
+            post{
+      success{
+            emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Success!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
       }
-   }
-   stage('push image to GCR'){
+               failure {
+              emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
+               }
+      }
+      }
+            stage('docker build and push site 2'){
+      steps{  
       container('docker'){
+         script{
+             def app
+       app = docker.build("us.gcr.io/sincere-hybrid-274219/wordpress2","${WORKSPACE}/wordpress2")
          docker.withRegistry('https://us.gcr.io', 'gcr:ClusterGPR') {
               app.push("${env.BUILD_NUMBER}")
               app.push("latest")    
+                   }
+                }
+             }
          }
+               post{
+      success{
+            emailext body: "Build wordpress2: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Build Success!!!", subject: 'Build result', to: 'skorikkirill7@gmail.com'  
       }
-   }
-         notifySuccessfulBuild2() 
-         stage('deploy helm chart'){
-          container('kubectl'){
-          //sh 'helm install --name mysql ${PWD}/mysql'
-          sh 'helm install --name wordpress2 ${PWD}/wordpress2'
-          sleep 15
-         }
-       }
-   stage('test site'){
-     //sh 'curl http://add194f6.ngrok.io' 
-     
-    def response2= sh(script: 'curl -s -o /dev/null -w "%{http_code}\n" http://34.71.232.200/wordpress2/', returnStdout: true)
+                    failure {
+              emailext body: "Build wordpress2: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Build Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
+               }
+      }
+      }
+            stage('deploy helm chart for site 2') {
+               steps{
+                  container('kubectl'){
+                     script{
+                       sh 'helm install --name wordpress2 ${PWD}/wordpress2'
+                        sleep 15 
+                     }
+                  }
+               }
+             }
+      stage('test site 2'){
+       steps{
+          script{
+             def response= sh(script: 'curl -s -o /dev/null -w "%{http_code}\n"  http://34.71.232.200/wordpress2/', returnStdout: true)
      //sh  ' echo $response' 
-           println("Response: " +response2)
-            def intResponse2 = response2 as int
-            if( intResponse2 == 200 ){
+           println("Response: " +response)
+             def intResponse = response as int
+            if( intResponse == 200 ){
                   println("Test passed continue to deploy")
                   println("sent e-mail success test")
-                     notifySuccessfulForSecond()
+                    // notifySuccessful()
                      container('kubectl'){
                      sh 'helm delete  wordpress2 --purge'
                      }
@@ -187,25 +128,43 @@ node('pod') {
                      container('kubectl'){
                       sh 'helm delete  wordpress2 --purge'
                         }
-                     notifyFailedForSecond()
+                   //  notifyFailed()
                   println("sent e-mail false test")
                   println("Fix your image")
-                  sh 'exit 1'
+                  sh 'exit 1'        
+                         }
+                    }
+                }
+             
          
+            post{
+      success{
+            emailext body: "Test wordpress2: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Success!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
+      }
+               failure {
+              emailext body: "Test wordpress2: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
+               }
+      }
+    }  
+         
+   
+      stage('deploy with ansible'){
+         agent {label 'master'}
+         steps{
+            script{
+                sh 'su - skorikkirill7'
+             sh ' su skorikkirill7 -c "ansible-playbook -i ansible/inventory.yml ${PWD}/ansible/wordpress1and2.yml"'    
             }
-         
-   }
-  
-         notifySuccessfulDeploy()
-                  echo "THE END"        
-
+         }
+      
+   post{
+      success{
+            emailext body: "Deploy: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Success!!!", subject: 'Deploy result', to: 'skorikkirill7@gmail.com'  
+      }
+      failure {
+         emailext body: "Deploy: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Fail!!!", subject: 'Deploy result', to: 'skorikkirill7@gmail.com'  
+      }
+      }
+        }
 }
-node('master'){
-         checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/skorik-kirill/MyProject.git']]]
-    stage('deploy with ansible'){  
-          sh 'ls' 
-          sh 'su - skorikkirill7'
-             sh ' su skorikkirill7 -c "ansible-playbook -i ansible/inventory.yml ${PWD}/ansible/wordpress1and2.yml"'        
-    }
-         notifySuccessfulDeploy()
 }
