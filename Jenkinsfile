@@ -53,6 +53,10 @@ pipeline {
                      }
                   }
                }
+               post{
+      failure{
+            emailext body: "Test deploy wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Deploy fail, check error!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com'  
+      }
              }
       stage('test site'){
        steps{
