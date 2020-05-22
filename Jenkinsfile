@@ -121,7 +121,7 @@ pipeline {
        steps{
           script{
              def response= sh(script: 'curl -s -o /dev/null -w "%{http_code}\n"  http://34.71.232.200/wordpress2/', returnStdout: true)
-     //sh  ' echo $response' 
+     // //sh  ' echo $response' 
            println("Response: " +response)
              def intResponse = response as int
             if( intResponse == 200 ){
