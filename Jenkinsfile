@@ -74,6 +74,7 @@ pipeline {
                       sh 'helm delete  wordpress1 --purge'
                         }
                    //  notifyFailed()
+               emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'
                   println("sent e-mail false test")
                   println("Fix your image")
                   sh 'exit 1'        
@@ -85,9 +86,9 @@ pipeline {
       success{
             emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Success!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
       }
-               failure {
-              emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
-               }
+             // failure {
+            //  emailext body: "Test wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Test Fail!!!", subject: 'Test result', to: 'skorikkirill7@gmail.com'  
+              // }
       }
       }
             stage('docker build and push site 2'){
