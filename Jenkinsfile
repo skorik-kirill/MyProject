@@ -1,11 +1,11 @@
 #!/usr/bin/env groovy
 pipeline {
    agent {label 'pod'}
-      triggers {
+      //triggers {
 
-        PollSCM('')
+      //  pollSCM('')
 
-      }
+     // }
          stages{
                   stage('Test docker'){
                            steps{
