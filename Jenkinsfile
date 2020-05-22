@@ -1,12 +1,12 @@
 #!/usr/bin/env groovy
 pipeline {
    agent {label 'pod'}
-      //triggers {
+      triggers {
 
-       // pollSCM('')
+        pollSCM('')
 
 
-    //  }
+      }
 
   
          stages{
