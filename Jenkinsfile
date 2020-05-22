@@ -55,7 +55,7 @@ pipeline {
                }
                post{
                   success{
-                 emailext body: "Test deploy wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: test deploy success, check error!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com' 
+                 emailext body: "Test deploy wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: test deploy success!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com' 
                      }
       failure{
             emailext body: "Test deploy wordpress1: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Deploy fail, check error!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com'  
@@ -130,7 +130,7 @@ pipeline {
                }
                post{
                   success{
-                 emailext body: "Test deploy wordpress2: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: test deploy success, check error!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com' 
+                 emailext body: "Test deploy wordpress2: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: test deploy success!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com' 
                      }
       failure{
             emailext body: "Test deploy wordpress2: Job ${env.JOB_NAME} ${env.BUILD_NUMBER}: Deploy fail, check error!!!", subject: 'Test deploy', to: 'skorikkirill7@gmail.com'  
