@@ -72,7 +72,7 @@ pipeline {
             if( intResponse == 200 ){
                   println("Test passed continue to deploy")
                   println("sent e-mail success test")
-                    // notifySuccessful()
+                    // //notifySuccessful()
                      container('kubectl'){
                      sh 'helm delete  wordpress1 --purge'
                      }
